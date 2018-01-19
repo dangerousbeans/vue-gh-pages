@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-var fsSync = require('fs-sync');
 var fs = require('fs');
+var ncp = require('ncp');
 var execSync = require('child_process').execSync;
 var rimraf = require('rimraf');
 var ghpages = require('gh-pages');
 var path = require('path');
-var packageJson = require('../../package.json');
+var packageJson = require('./package.json');
 var repository = packageJson['homepage'] || null;
 
 async function pushToGhPages () {
@@ -27,9 +27,10 @@ async function pushToGhPages () {
 }
 
 async function copySync (file, destination) {
-    await fsSync.copy(file, destination, (err) => {
+    ncp.limit = 16;
+    await ncp(file, destination, (err) => {
         if (err) {
-            console.error(err);
+            return console.error(err);
         }
     })
 }
@@ -56,10 +57,10 @@ async function runBuild () {
 
     execSync(`${packageManagerName} run build`);
 
-    copySync('dist', 'docs');
+    await copySync('dist', 'docs');
     console.log('Build Complete.');
     const pathToBuild = 'dist';
-    await rimraf(pathToBuild, async () => {
+    rimraf('pathToBuild', async () => {
         if (fs.existsSync('CNAME')) {
             await copySync('CNAME', 'docs/CNAME');
         }

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-var fsSync = require('fs-sync');
-var fs = require('fs');
-var execSync = require('child_process').execSync;
-var rimraf = require('rimraf');
-var ghpages = require('gh-pages');
-var path = require('path');
-var packageJson = require('../../package.json');
-var repository = packageJson['homepage'] || null;
+import * as fsSync from 'fs-sync';
+import * as execSync from 'child_process';
+import * as rimraf from 'rimraf';
+import * as fs from 'fs';
+import * as ghpages from 'gh-pages';
+import * as path from 'path';
+import * as packageJson from '../../package.json';
+const repository = packageJson['homepage'] || null
 
 async function pushToGhPages () {
     await ghpages.publish('docs', {
@@ -37,13 +37,11 @@ async function editForProduction () {
     console.log('Preparing files for github pages');
 
     fs.readFile('docs/index.html', 'utf-8', function (err, data) {
-        var replace_href_tags = data.replace(/href=\//g, 'href=');
-        var replace_src_tags = data.replace(/src=\//g, 'src=');
+        let replace_href_tags = data.replace(/href=\//g, 'href=');
+        let replace_src_tags = data.replace(/src=\//g, 'src=');
         fs.appendFileSync('docs/index.html', replace_src_tags, 'utf-8');
         fs.appendFileSync('docs/index.html', replace_href_tags, 'utf-8');
-        if (repository !== null) {
-            pushToGhPages();
-        }
+        if (repository !== null) { pushToGhPages(); }
     });
 }
 
@@ -77,7 +75,7 @@ async function runBuild () {
 
 async function createProductionBuild () {
     if (fs.existsSync('docs')) {
-        var pathToDocs = 'docs';
+        const pathToDocs = 'docs';
         await rimraf(pathToDocs, () => {
             runBuild();
         });

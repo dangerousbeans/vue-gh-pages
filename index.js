@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import * as fsSync from 'fs-sync';
-import * as execSync from 'child_process';
-import * as rimraf from 'rimraf';
-import * as fs from 'fs';
-import * as ghpages from 'gh-pages';
-import * as path from 'path';
-import * as packageJson from '../../package.json';
-const repository = packageJson['homepage'] || null
+var fsSync = require('fs-sync');
+var fs = require('fs');
+var execSync = require('child_process').execSync;
+var rimraf = require('rimraf');
+var ghpages = require('gh-pages');
+var path = require('path');
+var packageJson = require('../../package.json');
+var repository = packageJson['homepage'] || null;
 
 async function pushToGhPages () {
     await ghpages.publish('docs', {
@@ -16,11 +16,12 @@ async function pushToGhPages () {
     },
     function (err) {
         if (err) {
-            console.log('Push to remote failed, please double check that the homepage field in your package.json links to the correct repository.')
-            console.log('The build has completed but has not been pushed to github.')
+            console.error(err);
+            console.log('Push to remote failed, please double check that the homepage field in your package.json links to the correct repository.');
+            console.log('The build has completed but has not been pushed to github.');
         } else {
             console.log('Finished! production build is ready for gh-pages');
-            console.log('Pushed to gh-pages branch')
+            console.log('Pushed to gh-pages branch');
         }
     });
 }
@@ -41,7 +42,6 @@ async function editForProduction () {
         let replace_src_tags = data.replace(/src=\//g, 'src=');
         fs.appendFileSync('docs/index.html', replace_src_tags, 'utf-8');
         fs.appendFileSync('docs/index.html', replace_href_tags, 'utf-8');
-        if (repository !== null) { pushToGhPages(); }
     });
 }
 
@@ -67,25 +67,17 @@ async function runBuild () {
             await copySync('404.html', 'docs/404.html');
         }
         await editForProduction();
-        if (repository !== null) {
-            pushToGhPages();
-        }
+        if (repository !== null) { pushToGhPages(); }
     });
 }
 
 async function createProductionBuild () {
     if (fs.existsSync('docs')) {
         const pathToDocs = 'docs';
-        await rimraf(pathToDocs, () => {
-            runBuild();
-        });
-    } else {
-        runBuild();
+        rimraf(pathToDocs, () => { return ;});
     }
+    runBuild();
 }
 
-async function main () {
-    await createProductionBuild();
-}
-
-main();
+// Start
+createProductionBuild();

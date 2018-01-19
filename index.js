@@ -36,23 +36,14 @@ async function copySync (file, destination) {
 async function editForProduction () {
     console.log('Preparing files for github pages');
 
-    fs.readFile('docs/index.html', 'utf-8', async (err, data) => {
-        if (err) throw err;
-
-        var newValue = data.replace(/src=\//g, 'src=');
-
-        fs.writeFile('docs/index.html', newValue, 'utf-8', (err) => {
-            if (err) throw err;
-            fs.readFile('docs/index.html', 'utf-8', (err, data) => {
-                if (err) throw err;
-                var newValue2 = data.replace(/href=\//g, 'href=');
-                fs.writeFile('docs/index.html', newValue2, 'utf-8', function (err) {
-                    if (err) {
-                        console.error(err);
-                    }
-                });
-            });
-        });
+    fs.readFile('docs/index.html', 'utf-8', function (err, data) {
+        var replace_href_tags = data.replace(/href=\//g, 'href=');
+        var replace_src_tags = data.replace(/src=\//g, 'src=');
+        fs.appendFileSync('docs/index.html', replace_src_tags, 'utf-8');
+        fs.appendFileSync('docs/index.html', replace_href_tags, 'utf-8');
+        if (repository !== null) {
+            pushToGhPages();
+        }
     });
 }
 

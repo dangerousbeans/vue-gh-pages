@@ -80,6 +80,7 @@ function runBuild () {
             const filesToInclude = ['CNAME', 'favicon.ico', '404.html'];
             filesToInclude.forEach((file) => {
                 if (fs.existsSync(file)) {
+                    // Should probably be doing something like: path.resolve(__dirname, '../dist/index.html') anywhere there is a path PRE build
                     copyFiles(file, `docs/${file}`);
                 }
             });

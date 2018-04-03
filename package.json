@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-	"lint": "eslint ."
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
   "dependencies": {
     "gh-pages": "^1.0.0",
     "ncp": "^2.0.0",
+    "parse5": "^4.0.0",
     "rimraf": "^2.6.1"
   },
   "devDependencies": {}
